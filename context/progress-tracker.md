@@ -5,23 +5,25 @@ change.
 
 ## Current Phase
 
-- Architectural Refactoring (Zero-OTP and Strategy Payments)
+- Architectural Refactoring (Zero-OTP and Strategy Payments) Complete
 
 ## Current Goal
 
-- Execute refactoring outlined in `001-architectural-decision-change-implementation-build-plan.md` to transition the Unit 03 codebase to the Zero-OTP architecture.
+- Begin Unit 04: Menu API Routes
+  (`context/feature-specs/04-menu-api-routes.md`)
 
 ## Completed
 
 - Base project setup (Next.js, dependencies)
 - 01-database-schema-setup (Prisma schema defined, migration ran, data seeded)
-- 02-auth-customer-otp (OBSOLETE: OTP routes and UI implemented)
+- 02-auth-customer-session (Zero-OTP QR Session middleware and `qr-auth.ts` helper)
 - 03-auth-owner-staff (Email/password routes, StaffAccount Prisma schema, middleware, login UI implemented)
 - Architecture Pivots documented (Zero-OTP, Payment Strategy Pattern).
+- 001-architectural-decision-change-implementation-build-plan.md refactoring.
 
 ## In Progress
 
-- `001-architectural-decision-change-implementation-build-plan.md` refactoring.
+- None yet.
 
 ## Next Up
 

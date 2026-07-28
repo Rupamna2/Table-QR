@@ -7,16 +7,17 @@ datasource db {
   url      = env("DIRECT_URL")
 }
 
-// User model handles customers (via OTP)
+// User model handles customers (anonymous QR session footprint)
 model User {
   id        String   @id @default(uuid())
-  phone     String?  @unique // For customer OTP auth
+  sessionId String   @unique // The active_table_session ID
+  tableId   String?
   role      String   @default("customer")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  orders  Order[]
-  ratings Rating[]
+  orders    Order[]
+  ratings   Rating[]
 }
 
 // StaffAccount model handles owner/staff (via email)
@@ -37,63 +38,63 @@ model RestaurantTable {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  orders Order[]
+  orders    Order[]
 }
 
 model Category {
-  id        String   @id @default(uuid())
+  id        String     @id @default(uuid())
   name      String
-  sortOrder Int      @default(0)
-  isActive  Boolean  @default(true)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  sortOrder Int        @default(0)
+  isActive  Boolean    @default(true)
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
 
-  items MenuItem[]
+  items     MenuItem[]
 }
 
 model MenuItem {
-  id          String   @id @default(uuid())
+  id          String        @id @default(uuid())
   categoryId  String
   name        String
   description String?
   photoUrl    String?
-  price       Decimal  @db.Decimal(10, 2)
-  isAvailable Boolean  @default(true)
+  price       Decimal       @db.Decimal(10, 2)
+  isAvailable Boolean       @default(true)
   allergens   String[]
-  sortOrder   Int      @default(0)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  sortOrder   Int           @default(0)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
 
-  category   Category      @relation(fields: [categoryId], references: [id])
-  variants   ItemVariant[]
-  orderItems OrderItem[]
-  ratings    Rating[]
+  category    Category      @relation(fields: [categoryId], references: [id])
+  variants    ItemVariant[]
+  orderItems  OrderItem[]
+  ratings     Rating[]
 }
 
 model ItemVariant {
-  id          String  @id @default(uuid())
-  menuItemId  String
-  name        String // e.g., "Small", "Large", "Extra Spicy"
-  extraPrice  Decimal @default(0) @db.Decimal(10, 2)
+  id         String   @id @default(uuid())
+  menuItemId String
+  name       String   // e.g., "Small", "Large", "Extra Spicy"
+  extraPrice Decimal  @default(0) @db.Decimal(10, 2)
   isAvailable Boolean @default(true)
 
-  menuItem   MenuItem    @relation(fields: [menuItemId], references: [id], onDelete: Cascade)
+  menuItem   MenuItem @relation(fields: [menuItemId], references: [id], onDelete: Cascade)
   orderItems OrderItem[]
 }
 
 // Order status: "pending", "confirmed", "preparing", "ready", "completed", "cancelled"
 model Order {
-  id           String   @id @default(uuid())
-  userId       String
-  tableId      String
-  status       String   @default("pending")
-  totalAmount  Decimal  @db.Decimal(10, 2)
-  discount     Decimal  @default(0) @db.Decimal(10, 2)
-  finalAmount  Decimal  @db.Decimal(10, 2)
-  paymentMode  String? // "card", "upi", "cash"
-  specialNotes String?
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id             String          @id @default(uuid())
+  userId         String
+  tableId        String
+  status         String          @default("pending")
+  totalAmount    Decimal         @db.Decimal(10, 2)
+  discount       Decimal         @default(0) @db.Decimal(10, 2)
+  finalAmount    Decimal         @db.Decimal(10, 2)
+  paymentMode    String?         // "card", "upi", "cash"
+  specialNotes   String?
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
 
   user           User            @relation(fields: [userId], references: [id])
   table          RestaurantTable @relation(fields: [tableId], references: [id])
@@ -102,60 +103,60 @@ model Order {
 }
 
 model OrderItem {
-  id         String  @id @default(uuid())
-  orderId    String
-  menuItemId String
-  variantId  String?
-  quantity   Int     @default(1)
-  unitPrice  Decimal @db.Decimal(10, 2)
-  notes      String?
+  id            String       @id @default(uuid())
+  orderId       String
+  menuItemId    String
+  variantId     String?
+  quantity      Int          @default(1)
+  unitPrice     Decimal      @db.Decimal(10, 2)
+  notes         String?
 
-  order    Order        @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  menuItem MenuItem     @relation(fields: [menuItemId], references: [id])
-  variant  ItemVariant? @relation(fields: [variantId], references: [id])
+  order         Order        @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  menuItem      MenuItem     @relation(fields: [menuItemId], references: [id])
+  variant       ItemVariant? @relation(fields: [variantId], references: [id])
 }
 
 // Used for triggering post-order surveys
 model Survey {
-  id        String   @id @default(uuid())
-  title     String
-  isActive  Boolean  @default(true)
-  createdAt DateTime @default(now())
+  id          String           @id @default(uuid())
+  title       String
+  isActive    Boolean          @default(true)
+  createdAt   DateTime         @default(now())
 
-  questions SurveyQuestion[]
+  questions   SurveyQuestion[]
 }
 
 model SurveyQuestion {
-  id       String @id @default(uuid())
-  surveyId String
-  question String
-  type     String // e.g. "rating", "text"
+  id         String           @id @default(uuid())
+  surveyId   String
+  question   String
+  type       String           // e.g. "rating", "text"
 
-  survey    Survey           @relation(fields: [surveyId], references: [id], onDelete: Cascade)
-  responses SurveyResponse[]
+  survey     Survey           @relation(fields: [surveyId], references: [id], onDelete: Cascade)
+  responses  SurveyResponse[]
 }
 
 model SurveyResponse {
-  id         String   @id @default(uuid())
-  surveyId   String?
-  orderId    String   @unique
-  questionId String
-  answerText String?
-  rating     Int?
-  createdAt  DateTime @default(now())
+  id          String         @id @default(uuid())
+  surveyId    String?
+  orderId     String         @unique
+  questionId  String
+  answerText  String?
+  rating      Int?
+  createdAt   DateTime       @default(now())
 
-  order    Order          @relation(fields: [orderId], references: [id])
-  question SurveyQuestion @relation(fields: [questionId], references: [id])
+  order       Order          @relation(fields: [orderId], references: [id])
+  question    SurveyQuestion @relation(fields: [questionId], references: [id])
 }
 
 model Rating {
   id         String   @id @default(uuid())
   menuItemId String
   userId     String
-  score      Int // 1 to 5
+  score      Int      // 1 to 5
   comment    String?
   createdAt  DateTime @default(now())
 
-  menuItem MenuItem @relation(fields: [menuItemId], references: [id], onDelete: Cascade)
-  user     User     @relation(fields: [userId], references: [id])
+  menuItem   MenuItem @relation(fields: [menuItemId], references: [id], onDelete: Cascade)
+  user       User     @relation(fields: [userId], references: [id])
 }

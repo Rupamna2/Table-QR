@@ -1,4 +1,4 @@
-import { getServiceSupabase } from './supabase';
+import { supabase } from './supabase';
 import prisma from './prisma';
 
 export async function requireRole(token: string | null | undefined, allowedRoles: string[]) {
@@ -6,9 +6,8 @@ export async function requireRole(token: string | null | undefined, allowedRoles
     throw new Error('Unauthorized');
   }
 
-  // We use the service client to bypass RLS and quickly get the user by their JWT
-  const supabaseService = getServiceSupabase();
-  const { data: { user }, error } = await supabaseService.auth.getUser(token);
+  // Use the standard client (no service role bypass needed) to read the user identity from JWT
+  const { data: { user }, error } = await supabase.auth.getUser(token);
 
   if (error || !user) {
     throw new Error('Unauthorized');
