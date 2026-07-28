@@ -5,18 +5,19 @@ change.
 
 ## Current Phase
 
-- Customer Auth (Phone OTP) (Unit 02) Complete
+- Owner/Staff Auth + Roles (Unit 03) Complete
 
 ## Current Goal
 
-- Begin Unit 03: Owner/Staff Auth + Roles
-  (`context/feature-specs/03-auth-owner-staff.md`)
+- Begin Unit 04: Menu API Routes
+  (`context/feature-specs/04-menu-api-routes.md`)
 
 ## Completed
 
 - Base project setup (Next.js, dependencies)
 - 01-database-schema-setup (Prisma schema defined, migration ran, data seeded)
 - 02-auth-customer-otp (OTP routes and UI implemented)
+- 03-auth-owner-staff (Email/password routes, StaffAccount Prisma schema, middleware, login UI implemented)
 
 ## In Progress
 
@@ -24,8 +25,8 @@ change.
 
 ## Next Up
 
-- 03-auth-owner-staff
 - 04-menu-api-routes
+- 05-qr-code-generation
 - (full order in `context/feature-specs/00-build-plan.md`)
 
 ## Open Questions
