@@ -5,17 +5,18 @@ change.
 
 ## Current Phase
 
-- Database Schema Setup (Unit 01) Complete
+- Customer Auth (Phone OTP) (Unit 02) Complete
 
 ## Current Goal
 
-- Begin Unit 02: Customer Auth (Phone OTP)
-  (`context/feature-specs/02-auth-customer-otp.md`)
+- Begin Unit 03: Owner/Staff Auth + Roles
+  (`context/feature-specs/03-auth-owner-staff.md`)
 
 ## Completed
 
 - Base project setup (Next.js, dependencies)
 - 01-database-schema-setup (Prisma schema defined, migration ran, data seeded)
+- 02-auth-customer-otp (OTP routes and UI implemented)
 
 ## In Progress
 
@@ -23,8 +24,8 @@ change.
 
 ## Next Up
 
-- 02-auth-customer-otp
 - 03-auth-owner-staff
+- 04-menu-api-routes
 - (full order in `context/feature-specs/00-build-plan.md`)
 
 ## Open Questions
