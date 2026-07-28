@@ -2,46 +2,29 @@
 
 ## Goal
 
-Let an owner generate a unique, signed QR code per
-restaurant table, and let the customer-facing app validate
-that token to establish table context.
+Provide owner tooling to generate printable QR codes for
+each table, embedding cryptographic signatures for the Zero-OTP customer session auth.
 
 ## Design
 
-Minimal owner-side UI: a table list with a "Generate QR"
-button per row, and a printable QR image modal
-(`rounded-3xl` overlay per `ui-context.md`). Full owner
-shell/navigation is Unit 11 — this unit's UI is a standalone
-utility page.
+Simple owner dashboard view (stubbed for now, finalized in Unit 14) containing a list of tables and a "Generate QR" button per table.
 
 ## Implementation
 
-1. `lib/qrcode.ts` — generates a signed `qr_token` (e.g.
-   HMAC of table id + secret) and the resulting
-   `https://.../order?t=<tableId>&k=<token>` URL, using the
-   `qrcode` npm package to render a PNG/SVG.
-2. `app/api/tables/route.ts` — `POST` (owner-only, via
-   `requireRole` from Unit 03) creates a `RestaurantTable`
-   row and generates its token; `GET` lists tables for the
-   owner view.
-3. `app/api/tables/[id]/regenerate/route.ts` — owner-only,
-   invalidates the previous token and issues a new one, per
-   Invariant 3 in `architecture.md`.
-4. `app/api/tables/validate/route.ts` — public `GET`,
-   given `t` and `k`, confirms the token matches the table
-   and the table `is_active`; used by the customer menu
-   landing page before any menu data loads.
+1. `app/api/tables/[id]/qr/route.ts` (POST) — owner-only.
+   - Generates a new cryptographic signature `sig` and timestamp `ts` utilizing a server-side HMAC secret (`QR_SECRET`).
+   - Updates the `RestaurantTable` row with this signature metadata to track validity.
+   - Generates the actual PNG/SVG of the QR code pointing to `https://app.tableqr.pro/menu/[tableId]?ts=[timestamp]&sig=[signature]`.
+2. `lib/qrcode.ts` — utility wrapping a QR code library
+   (e.g., `qrcode`) to output base64 data URIs.
 
 ## Dependencies
 
-- `qrcode` (npm)
+- `qrcode` (or similar node library)
+- `crypto` (for HMAC generation)
 
 ## Verification Checklist
 
-- [ ] A generated QR encodes a URL that resolves back to
-      the correct table id via `validate`
-- [ ] Regenerating a table's QR invalidates the old token
-      (old token fails `validate`)
-- [ ] Table creation/regeneration is blocked for
-      unauthenticated or `staff`-role callers
-- [ ] `npm run build` passes
+- [ ] A generated QR code successfully points to the table URL with `ts` and `sig` query params.
+- [ ] Only an owner/staff session can trigger generation.
+- [ ] `npm run build` passes.

@@ -1,41 +1,27 @@
-# Unit 15 — Payment Mode Recording
+# Unit 15 — Payment Gateway Strategy Integration
 
 ## Goal
 
-Let a customer select a payment mode (card / UPI / cash) at
-checkout and have it recorded on the order, per the MVP
-scope defined in `architecture.md` (no live gateway call).
+Abstract payment processing away from a specific provider, allowing TableQR Pro to swap payment engines using a Factory and Strategy Pattern based on environmental variables or specific use cases.
 
 ## Design
 
-Payment mode selector inside the Unit 09 checkout step: a
-segmented control (card / UPI / cash) styled with
-`--accent-primary` for the selected state.
+No new UI components; this wires into the existing Checkout flow from Unit 09.
 
 ## Implementation
 
-1. Extend the Unit 09 checkout payload to include
-   `payment_mode`, validated against the enum in the schema.
-2. `app/api/orders/route.ts` (Unit 06) — store
-   `payment_mode`, default `payment_status = 'unpaid'`.
-3. `app/api/orders/[id]/payment-status/route.ts` —
-   owner/staff-only `PATCH`, marks `payment_status = 'paid'`
-   once cash/card is settled at the table (manual
-   confirmation, no gateway webhook in MVP).
-4. Explicitly out of scope for this unit: live card/UPI
-   processing, refunds, receipts. These require a
-   payments-provider spec per the Open Question in
-   `progress-tracker.md`.
-
-## Dependencies
-
-- None new
+1. Define `lib/payments/IPaymentGateway.ts`:
+   - An interface defining methods like `initializeTransaction(amount, orderId)`, `verifyPayment(payload)`, and `refundTransaction(orderId)`.
+2. Implement 3 Concrete Strategies:
+   - `RazorpayGateway.ts`: Full production Indian payment infrastructure.
+   - `CashPaymentGateway.ts`: Creates a pending/cash state triggering the manual IP/Network soft geofencing check.
+   - `SepoliaCryptoGateway.ts`: A sandbox Web3 integration for free testing/pilot restaurants.
+3. Implement `PaymentFactory.ts`:
+   - Selects the correct Strategy instantiation at runtime based on `process.env.PAYMENT_PROVIDER`.
+4. Update checkout API routes in `app/api/orders` to utilize the Factory instead of directly recording a static `paymentMode`.
 
 ## Verification Checklist
 
-- [ ] Every order created via Unit 09 has a non-null
-      `payment_mode`
-- [ ] `payment_status` starts `unpaid` and only an
-      owner/staff session can mark it `paid`
-- [ ] No code path attempts a live gateway charge
-- [ ] `npm run build` passes
+- [ ] `PaymentFactory` correctly outputs the class corresponding to the environment variable.
+- [ ] At least one concrete strategy can be swapped in without modifying the core checkout API handler logic.
+- [ ] `npm run build` passes.

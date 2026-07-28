@@ -5,23 +5,23 @@ change.
 
 ## Current Phase
 
-- Owner/Staff Auth + Roles (Unit 03) Complete
+- Architectural Refactoring (Zero-OTP and Strategy Payments)
 
 ## Current Goal
 
-- Begin Unit 04: Menu API Routes
-  (`context/feature-specs/04-menu-api-routes.md`)
+- Execute refactoring outlined in `001-architectural-decision-change-implementation-build-plan.md` to transition the Unit 03 codebase to the Zero-OTP architecture.
 
 ## Completed
 
 - Base project setup (Next.js, dependencies)
 - 01-database-schema-setup (Prisma schema defined, migration ran, data seeded)
-- 02-auth-customer-otp (OTP routes and UI implemented)
+- 02-auth-customer-otp (OBSOLETE: OTP routes and UI implemented)
 - 03-auth-owner-staff (Email/password routes, StaffAccount Prisma schema, middleware, login UI implemented)
+- Architecture Pivots documented (Zero-OTP, Payment Strategy Pattern).
 
 ## In Progress
 
-- None yet.
+- `001-architectural-decision-change-implementation-build-plan.md` refactoring.
 
 ## Next Up
 
@@ -31,22 +31,14 @@ change.
 
 ## Open Questions
 
-- Payment gateway choice for a real (non-MVP) launch is
-  unresolved — MVP records `payment_mode` without live
-  gateway integration. Must be resolved before any
-  "payments-provider" spec is written.
-- Whether guest checkout (no OTP) is acceptable for a pilot
-  restaurant is unresolved — MVP requires OTP auth for all
-  orders.
+- None at this time. Previous questions resolved via Architecture Decisions.
 
 ## Architecture Decisions
 
-- Collapsed the originally proposed separate Node/Express +
-  Socket.io backend into Next.js API routes + Supabase
-  Realtime, to reduce system boundaries for MVP. See
-  `architecture.md` Stack table note.
-- Payments are recorded, not processed, in MVP (no live
-  gateway call). See `architecture.md` Stack table.
+- **Authentication**: Discarded SMS OTP. Using "Physical QR Anchoring". QR URLs include cryptographic `sig` and `ts`. Middleware validates and sets 3-hour HttpOnly `active_table_session`.
+- **Payments**: Abstracted via `IPaymentGateway` interface using Strategy Pattern (Razorpay, Cash, SepoliaCrypto) controlled by a PaymentFactory.
+- **Security Check**: Online payments skip physical validation; Cash-at-Table payments enforce Network/IP geofencing against restaurant broadband.
+- Collapsed the originally proposed separate Node/Express + Socket.io backend into Next.js API routes + Supabase Realtime, to reduce system boundaries for MVP.
 
 ## Session Notes
 

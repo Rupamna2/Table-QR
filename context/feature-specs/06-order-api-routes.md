@@ -2,9 +2,9 @@
 
 ## Goal
 
-Provide the authenticated order-creation and status-update
-API that the cart (Unit 09) and live order board (Unit 13)
-will call — the single source of truth for order state.
+Provide the server endpoints to create, read, and update
+orders and their line items, validating status transitions
+and security checks securely on the server.
 
 ## Design
 
@@ -12,21 +12,20 @@ No UI in this unit.
 
 ## Implementation
 
-1. `app/api/orders/route.ts` — `POST` (requires customer
-   session from Unit 02): validates cart payload with `zod`,
-   recomputes `total_amount`/`final_amount` server-side
-   from current menu prices (never trusts client-submitted
-   totals), creates `Order` + `OrderItem` rows, sets
-   `status = 'pending'`.
-2. `app/api/orders/[id]/route.ts` — `GET`, returns order
-   detail; customer can only fetch their own order, owner/
-   staff can fetch any order for their restaurant.
-3. `app/api/orders/[id]/status/route.ts` — `PATCH`,
-   owner/staff only, transitions `status` following the
-   sequence defined in Invariant 4 of `architecture.md`;
-   rejects any out-of-sequence transition with a 400.
-4. `app/api/orders/table/[tableId]/route.ts` — `GET`,
-   owner/staff only, lists active orders for a table.
+1. `app/api/orders/route.ts` (POST) — accepts an array of
+   items, variants, and quantities.
+   - Requires valid customer `active_table_session` cookie.
+   - For 'Cash' orders, enforce a soft Network/IP matching check (e.g., comparing `x-forwarded-for` against a known restaurant broadband IP) to confirm physical presence.
+   - Calculates the `totalAmount` server-side by
+     querying the DB for current prices (do not trust
+     client prices).
+   - Creates the `Order` and `OrderItem` rows in a transaction.
+2. `app/api/orders/[id]/route.ts` (GET) — retrieves an
+   order. Customer can only read their own order; staff can
+   read any order.
+3. `app/api/orders/[id]/status/route.ts` (PATCH) — updates
+   order status. Staff-only. Must enforce Invariant 4
+   (valid state machine transitions only).
 
 ## Dependencies
 
@@ -35,10 +34,10 @@ No UI in this unit.
 
 ## Verification Checklist
 
-- [ ] Order totals are always recomputed server-side from
-      current DB prices, never accepted verbatim from the
-      client
-- [ ] A status transition attempt that skips a step (e.g.
-      `pending → ready`) is rejected
-- [ ] A customer cannot `GET` another customer's order
-- [ ] `npm run build` passes
+- [ ] Creating an order correctly sums DB prices, ignoring
+      any price sent by the client payload.
+- [ ] 'Cash' orders fail if the IP check fails.
+- [ ] Attempting to transition an order from `pending`
+      directly to `completed` returns a 400 error.
+- [ ] An unauthenticated customer cannot read an order.
+- [ ] `npm run build` passes.

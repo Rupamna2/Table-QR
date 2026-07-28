@@ -17,7 +17,8 @@ No UI in this unit. N/A for `ui-context.md`.
 2. Initialize Prisma; point `DATABASE_URL` at the Supabase
    Postgres connection string.
 3. Define `prisma/schema.prisma` models for MVP scope only:
-   `User`, `RestaurantTable`, `Category`, `MenuItem`,
+   `User` (for anonymous QR session binding), `StaffAccount`,
+   `RestaurantTable`, `Category`, `MenuItem`,
    `ItemVariant`, `Order`, `OrderItem`, `Survey`,
    `SurveyQuestion`, `SurveyResponse`, `Rating`. Use
    `Decimal` for all money fields per Invariant 5 in

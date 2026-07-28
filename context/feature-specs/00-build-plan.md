@@ -9,7 +9,7 @@ wiring, UI shells before real data.
 | # | Unit | Boundary | Depends On |
 |---|------|----------|------------|
 | 01 | Database Schema Setup | `prisma/` | — |
-| 02 | Customer Auth (Phone OTP) | `app/api/auth`, `lib/supabase` | 01 |
+| 02 | Customer Auth (Zero-OTP QR Session) | `middleware.ts`, `lib/qr-auth.ts` | 01 |
 | 03 | Owner/Staff Auth + Roles | `app/api/auth`, `app/(owner)` middleware | 01 |
 | 04 | Menu API Routes | `app/api/menu` | 01 |
 | 05 | QR Code Generation + Table Token Validation | `lib/qrcode`, `app/api/tables` | 01, 03 |
@@ -22,7 +22,7 @@ wiring, UI shells before real data.
 | 12 | Owner Dashboard Stats API + Wiring | `app/api/dashboard`, `app/(owner)/dashboard` | 06, 11 |
 | 13 | Live Order Board (accept/update status) | `app/(owner)/orders` | 06, 10 |
 | 14 | Owner Menu Manager UI (CRUD + stock toggle) | `app/(owner)/menu` | 04, 05 |
-| 15 | Payment Mode Recording | `app/api/orders`, `app/(customer)/cart` | 06, 09 |
+| 15 | Payment Gateway Strategy Integration | `app/api/payments`, `lib/payments/` | 06, 09 |
 | 16 | Post-Order Survey → Discount | `app/api/surveys`, `app/(customer)/track` | 06, 10 |
 
 ## Phase 2 Backlog (Not Sequenced — No Spec Yet)
