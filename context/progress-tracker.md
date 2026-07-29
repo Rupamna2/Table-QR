@@ -5,12 +5,12 @@ change.
 
 ## Current Phase
 
-- Cart & Checkout Flow (Unit 09) Complete
+- Realtime Order Tracking (Unit 10) Complete
 
 ## Current Goal
 
-- Begin Unit 10: Realtime Order Tracking
-  (`context/feature-specs/10-realtime-order-tracking.md`)
+- Begin Unit 11: Owner Dashboard UI Shell
+  (`context/feature-specs/11-owner-dashboard-shell.md`)
 
 ## Completed
 
@@ -26,6 +26,7 @@ change.
 - 07-customer-menu-ui-shell
 - 08-menu-data-wiring
 - 09-cart-checkout-flow
+- 10-realtime-order-tracking
 
 ## In Progress
 
@@ -33,8 +34,8 @@ change.
 
 ## Next Up
 
-- 10-realtime-order-tracking
 - 11-owner-dashboard-shell
+- 12-dashboard-data-wiring
 - (full order in `context/feature-specs/00-build-plan.md`)
 
 ## Open Questions
