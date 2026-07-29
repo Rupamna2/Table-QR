@@ -5,12 +5,12 @@ change.
 
 ## Current Phase
 
-- QR Code Generation + Table Token Validation (Unit 05) Complete
+- Order API Routes (Unit 06) Complete
 
 ## Current Goal
 
-- Begin Unit 06: Order API Routes
-  (`context/feature-specs/06-order-api-routes.md`)
+- Begin Unit 07: Customer Menu UI Shell
+  (`context/feature-specs/07-customer-menu-ui-shell.md`)
 
 ## Completed
 
@@ -22,6 +22,7 @@ change.
 - 001-architectural-decision-change-implementation-build-plan.md refactoring.
 - 04-menu-api-routes
 - 05-qr-code-generation
+- 06-order-api-routes
 
 ## In Progress
 
@@ -29,8 +30,8 @@ change.
 
 ## Next Up
 
-- 06-order-api-routes
 - 07-customer-menu-ui-shell
+- 08-menu-data-wiring
 - (full order in `context/feature-specs/00-build-plan.md`)
 
 ## Open Questions
