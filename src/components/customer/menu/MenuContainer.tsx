@@ -4,6 +4,13 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { DishCard } from "./DishCard";
 
+interface Variant {
+  id: string;
+  name: string;
+  extraPrice: string;
+  isAvailable: boolean;
+}
+
 interface Category {
   id: string;
   name: string;
@@ -18,6 +25,7 @@ interface MenuItem {
   price: string;
   isAvailable: boolean;
   allergens: string[];
+  variants: Variant[];
 }
 
 interface MenuContainerProps {
@@ -34,7 +42,6 @@ export function MenuContainer({ categories, items }: MenuContainerProps) {
 
   return (
     <>
-      {/* Category Filter */}
       <div className="w-full overflow-x-auto px-4 pb-2 sticky top-[73px] bg-[var(--bg-base)]/90 backdrop-blur z-10 pt-2 border-b border-[var(--border-default)]">
         <div className="flex gap-2 w-max pb-2">
           <Button
@@ -57,7 +64,6 @@ export function MenuContainer({ categories, items }: MenuContainerProps) {
         </div>
       </div>
 
-      {/* Dish Grid */}
       <div className="px-4 py-6">
         <h2 className="text-xl font-bold mb-4">
           {activeCategory === "all" ? "All Items" : categories.find(c => c.id === activeCategory)?.name}
@@ -72,12 +78,14 @@ export function MenuContainer({ categories, items }: MenuContainerProps) {
             {filteredItems.map(dish => (
               <DishCard
                 key={dish.id}
+                id={dish.id}
                 name={dish.name}
                 price={dish.price}
                 description={dish.description}
                 tags={dish.allergens}
                 imageUrl={dish.photoUrl}
                 isAvailable={dish.isAvailable}
+                variants={dish.variants}
               />
             ))}
           </div>
