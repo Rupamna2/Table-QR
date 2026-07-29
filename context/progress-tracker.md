@@ -5,12 +5,12 @@ change.
 
 ## Current Phase
 
-- Menu API Routes (Unit 04) Complete
+- QR Code Generation + Table Token Validation (Unit 05) Complete
 
 ## Current Goal
 
-- Begin Unit 05: QR Code Generation + Table Token Validation
-  (`context/feature-specs/05-qr-code-generation.md`)
+- Begin Unit 06: Order API Routes
+  (`context/feature-specs/06-order-api-routes.md`)
 
 ## Completed
 
@@ -21,6 +21,7 @@ change.
 - Architecture Pivots documented (Zero-OTP, Payment Strategy Pattern).
 - 001-architectural-decision-change-implementation-build-plan.md refactoring.
 - 04-menu-api-routes
+- 05-qr-code-generation
 
 ## In Progress
 
@@ -28,8 +29,8 @@ change.
 
 ## Next Up
 
-- 05-qr-code-generation
 - 06-order-api-routes
+- 07-customer-menu-ui-shell
 - (full order in `context/feature-specs/00-build-plan.md`)
 
 ## Open Questions
