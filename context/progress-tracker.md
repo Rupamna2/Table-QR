@@ -5,12 +5,12 @@ change.
 
 ## Current Phase
 
-- Order API Routes (Unit 06) Complete
+- Customer Menu UI Shell (Unit 07) Complete
 
 ## Current Goal
 
-- Begin Unit 07: Customer Menu UI Shell
-  (`context/feature-specs/07-customer-menu-ui-shell.md`)
+- Begin Unit 08: Menu Data Wiring
+  (`context/feature-specs/08-menu-data-wiring.md`)
 
 ## Completed
 
@@ -23,6 +23,7 @@ change.
 - 04-menu-api-routes
 - 05-qr-code-generation
 - 06-order-api-routes
+- 07-customer-menu-ui-shell
 
 ## In Progress
 
@@ -30,8 +31,8 @@ change.
 
 ## Next Up
 
-- 07-customer-menu-ui-shell
 - 08-menu-data-wiring
+- 09-cart-checkout-flow
 - (full order in `context/feature-specs/00-build-plan.md`)
 
 ## Open Questions
