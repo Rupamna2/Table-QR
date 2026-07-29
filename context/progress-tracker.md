@@ -5,12 +5,12 @@ change.
 
 ## Current Phase
 
-- Architectural Refactoring (Zero-OTP and Strategy Payments) Complete
+- Menu API Routes (Unit 04) Complete
 
 ## Current Goal
 
-- Begin Unit 04: Menu API Routes
-  (`context/feature-specs/04-menu-api-routes.md`)
+- Begin Unit 05: QR Code Generation + Table Token Validation
+  (`context/feature-specs/05-qr-code-generation.md`)
 
 ## Completed
 
@@ -20,6 +20,7 @@ change.
 - 03-auth-owner-staff (Email/password routes, StaffAccount Prisma schema, middleware, login UI implemented)
 - Architecture Pivots documented (Zero-OTP, Payment Strategy Pattern).
 - 001-architectural-decision-change-implementation-build-plan.md refactoring.
+- 04-menu-api-routes
 
 ## In Progress
 
@@ -27,8 +28,8 @@ change.
 
 ## Next Up
 
-- 04-menu-api-routes
 - 05-qr-code-generation
+- 06-order-api-routes
 - (full order in `context/feature-specs/00-build-plan.md`)
 
 ## Open Questions
