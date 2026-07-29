@@ -3,6 +3,7 @@ import { z } from 'zod';
 import prisma from '@/lib/prisma';
 import { validateCustomerSession } from '@/lib/qr-auth';
 import { PaymentFactory } from '@/lib/payments/PaymentFactory';
+import Decimal from 'decimal.js';
 
 const createOrderSchema = z.object({
   paymentMode: z.enum(['card', 'upi', 'cash', 'sepolia']),
@@ -17,10 +18,7 @@ const createOrderSchema = z.object({
 
 export async function POST(request: NextRequest) {
   try {
-    // 1. Authenticate Customer
     const session = await validateCustomerSession();
-
-    // 2. Validate Payload
     const body = await request.json();
     const result = createOrderSchema.safeParse(body);
 
@@ -33,14 +31,11 @@ export async function POST(request: NextRequest) {
 
     const { paymentMode, specialNotes, items } = result.data;
 
-    // 3. Conditional Security Check: Cash Geofencing
     if (paymentMode === 'cash') {
       const forwardedFor = request.headers.get('x-forwarded-for');
       const clientIp = forwardedFor ? forwardedFor.split(',')[0].trim() : (request.headers.get('x-real-ip') || 'unknown');
       const restaurantIp = process.env.RESTAURANT_BROADBAND_IP;
 
-      // If a known IP is set in ENV, strictly enforce it.
-      // If not set, we bypass (assuming dev or opt-out).
       if (restaurantIp && clientIp !== restaurantIp && clientIp !== '::1' && clientIp !== '127.0.0.1') {
         return NextResponse.json({
           data: null,
@@ -49,13 +44,11 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // 4. Calculate Server-Side Pricing via Transaction
     const orderData = await prisma.$transaction(async (tx) => {
-      let totalAmount = 0;
+      let totalAmount = new Decimal(0);
       const orderItemsToCreate = [];
 
       for (const item of items) {
-        // Fetch base item
         const menuItem = await tx.menuItem.findUnique({
           where: { id: item.menuItemId }
         });
@@ -64,9 +57,8 @@ export async function POST(request: NextRequest) {
           throw new Error(`Item ${item.menuItemId} is unavailable or does not exist.`);
         }
 
-        let unitPrice = Number(menuItem.price);
+        let unitPrice = new Decimal(menuItem.price.toString());
 
-        // Fetch variant if provided
         if (item.variantId) {
           const variant = await tx.itemVariant.findUnique({
             where: { id: item.variantId }
@@ -74,28 +66,28 @@ export async function POST(request: NextRequest) {
           if (!variant || variant.menuItemId !== menuItem.id || !variant.isAvailable) {
              throw new Error(`Variant ${item.variantId} is unavailable or invalid.`);
           }
-          unitPrice += Number(variant.extraPrice);
+          unitPrice = unitPrice.add(new Decimal(variant.extraPrice.toString()));
         }
 
-        totalAmount += unitPrice * item.quantity;
+        const itemTotal = unitPrice.mul(new Decimal(item.quantity));
+        totalAmount = totalAmount.add(itemTotal);
 
         orderItemsToCreate.push({
           menuItemId: item.menuItemId,
           variantId: item.variantId,
           quantity: item.quantity,
-          unitPrice: unitPrice,
+          unitPrice: unitPrice.toString(),
           notes: item.notes
         });
       }
 
-      // Initialize the core Order
       const newOrder = await tx.order.create({
         data: {
           userId: session.user.id,
           tableId: session.tableId,
           status: 'pending',
-          totalAmount: totalAmount,
-          finalAmount: totalAmount, // Discounts come later in Phase 2/Survey logic
+          totalAmount: totalAmount.toString(),
+          finalAmount: totalAmount.toString(),
           paymentMode: paymentMode,
           specialNotes: specialNotes,
           items: {
@@ -110,10 +102,9 @@ export async function POST(request: NextRequest) {
       return newOrder;
     });
 
-    // 5. Interface with Payment Strategy
     const paymentGateway = PaymentFactory.getGateway();
     const paymentResponse = await paymentGateway.initializeTransaction({
-      amount: Number(orderData.finalAmount),
+      amount: Number(orderData.finalAmount), // Third-party payment APIs usually expect numbers
       orderId: orderData.id,
       currency: 'INR'
     });
@@ -127,7 +118,6 @@ export async function POST(request: NextRequest) {
     });
 
   } catch (error: any) {
-    // Determine if it's an auth error vs business logic error
     const isAuthError = error.message.includes('Unauthorized');
     const isBusinessLogicError = error.message.includes('unavailable') || error.message.includes('invalid');
 

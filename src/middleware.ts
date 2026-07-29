@@ -51,25 +51,14 @@ export async function middleware(request: NextRequest) {
   if (pathname.startsWith('/menu/')) {
     const tableId = pathname.split('/menu/')[1];
 
-    // Check if user already has an active session for THIS table
     const existingSession = request.cookies.get('active_table_session');
 
-    // If they have query params, they just scanned a fresh QR code
+    // If they have query params, they just scanned a QR code
     const ts = searchParams.get('ts');
     const sig = searchParams.get('sig');
 
     if (ts && sig) {
-      // Validate Timestamp (must be within 3 hours)
-      const timestamp = parseInt(ts, 10);
-      const now = Date.now();
-      const threeHours = 3 * 60 * 60 * 1000;
-
-      if (isNaN(timestamp) || now - timestamp > threeHours || timestamp > now + 60000) {
-        // Expired or invalid QR code
-        return new NextResponse('QR code expired. Please ask for a new QR code.', { status: 403 });
-      }
-
-      // Validate HMAC Signature
+      // Validate HMAC Signature (No timestamp expiry check here since physical QR codes live forever)
       const isValid = await verifyHMAC(tableId, ts, sig);
 
       if (!isValid) {
@@ -83,7 +72,7 @@ export async function middleware(request: NextRequest) {
       const redirectUrl = new URL(pathname, request.url);
       const response = NextResponse.redirect(redirectUrl);
 
-      // Set the 3-hour HttpOnly cookie
+      // Set the 3-hour HttpOnly session cookie
       response.cookies.set({
         name: 'active_table_session',
         value: `${tableId}::${newSessionId}`,

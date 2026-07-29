@@ -5,12 +5,12 @@ change.
 
 ## Current Phase
 
-- Customer Menu UI Shell (Unit 07) Complete
+- Menu Data Wiring (Unit 08) Complete
 
 ## Current Goal
 
-- Begin Unit 08: Menu Data Wiring
-  (`context/feature-specs/08-menu-data-wiring.md`)
+- Begin Unit 09: Cart & Checkout Flow
+  (`context/feature-specs/09-cart-checkout-flow.md`)
 
 ## Completed
 
@@ -24,6 +24,7 @@ change.
 - 05-qr-code-generation
 - 06-order-api-routes
 - 07-customer-menu-ui-shell
+- 08-menu-data-wiring
 
 ## In Progress
 
@@ -31,8 +32,8 @@ change.
 
 ## Next Up
 
-- 08-menu-data-wiring
 - 09-cart-checkout-flow
+- 10-realtime-order-tracking
 - (full order in `context/feature-specs/00-build-plan.md`)
 
 ## Open Questions

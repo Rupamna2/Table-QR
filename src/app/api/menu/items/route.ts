@@ -1,12 +1,13 @@
-import { NextResponse } from 'next/server';
+import { NextResponse, NextRequest } from 'next/server';
 import { z } from 'zod';
 import prisma from '@/lib/prisma';
 
 const querySchema = z.object({
   category_id: z.string().optional(),
+  include_unavailable: z.enum(['true', 'false']).optional().default('false')
 });
 
-export async function GET(request: Request) {
+export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const result = querySchema.safeParse(Object.fromEntries(searchParams));
@@ -18,12 +19,13 @@ export async function GET(request: Request) {
       }, { status: 400 });
     }
 
-    const { category_id } = result.data;
+    const { category_id, include_unavailable } = result.data;
 
-    // Prisma filter object
-    const whereClause: any = {
-      isAvailable: true,
-    };
+    const whereClause: any = {};
+
+    if (include_unavailable !== 'true') {
+      whereClause.isAvailable = true;
+    }
 
     if (category_id) {
       whereClause.categoryId = category_id;
@@ -32,9 +34,7 @@ export async function GET(request: Request) {
     const items = await prisma.menuItem.findMany({
       where: whereClause,
       include: {
-        variants: {
-          where: { isAvailable: true }
-        }
+        variants: true
       },
       orderBy: {
         sortOrder: 'asc',
