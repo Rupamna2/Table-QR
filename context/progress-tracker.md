@@ -5,12 +5,12 @@ change.
 
 ## Current Phase
 
-- Owner Dashboard UI Shell (Unit 11) Complete
+- Dashboard Data Wiring (Unit 12) Complete
 
 ## Current Goal
 
-- Begin Unit 12: Dashboard Data Wiring
-  (`context/feature-specs/12-dashboard-data-wiring.md`)
+- Begin Unit 13: Live Order Board
+  (`context/feature-specs/13-live-order-board.md`)
 
 ## Completed
 
@@ -28,6 +28,7 @@ change.
 - 09-cart-checkout-flow
 - 10-realtime-order-tracking
 - 11-owner-dashboard-shell
+- 12-dashboard-data-wiring
 
 ## In Progress
 
@@ -35,8 +36,8 @@ change.
 
 ## Next Up
 
-- 12-dashboard-data-wiring
 - 13-live-order-board
+- 14-menu-manager-ui
 - (full order in `context/feature-specs/00-build-plan.md`)
 
 ## Open Questions
