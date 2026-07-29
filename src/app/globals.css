@@ -1,0 +1,25 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg-base: #1A1A2E;
+  --bg-surface: #16213E;
+  --bg-glass: rgba(255,255,255,0.07);
+
+  --text-primary: #F5F5F5;
+  --text-muted: #8A8FA8;
+
+  --accent-primary: #FF4F00;
+  --accent-gold: #FFD700;
+
+  --border-default: #2A2F4A;
+
+  --state-success: #00F5A0;
+  --state-error: #FF5C5C;
+}
+
+body {
+  background-color: var(--bg-base);
+  color: var(--text-primary);
+}
