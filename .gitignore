@@ -147,3 +147,8 @@ vite.config.ts.timestamp-*
 .agents
 .claude
 .windsurf
+
+.agents
+.claude
+.windsurf
+node_modules

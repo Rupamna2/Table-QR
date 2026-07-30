@@ -58,7 +58,17 @@ export async function middleware(request: NextRequest) {
     const sig = searchParams.get('sig');
 
     if (ts && sig) {
-      // Validate HMAC Signature (No timestamp expiry check here since physical QR codes live forever)
+      // Re-adding the timestamp validation to prevent indefinite replay attacks.
+      const timestamp = parseInt(ts, 10);
+      const now = Date.now();
+      const threeHours = 3 * 60 * 60 * 1000;
+
+      if (isNaN(timestamp) || now - timestamp > threeHours || timestamp > now + 60000) {
+        // Expired or invalid QR code
+        return new NextResponse('QR code expired. Please ask for a new QR code.', { status: 403 });
+      }
+
+      // Validate HMAC Signature
       const isValid = await verifyHMAC(tableId, ts, sig);
 
       if (!isValid) {
